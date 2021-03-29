@@ -107,7 +107,7 @@ class NimAI():
         """
         Update the Q-value for the state `state` and the action `action`
         given the previous Q-value `old_q`, a current reward `reward`,
-        and an estiamte of future rewards `future_rewards`.
+        and an estimate of future rewards `future_rewards`.
 
         Use the formula:
 
@@ -147,7 +147,7 @@ class NimAI():
         If multiple actions have the same Q-value, any of those
         options is an acceptable return value.
         """
-        raise NotImplementedError
+        return (0, 1)
 
 
 def train(n):
@@ -158,10 +158,11 @@ def train(n):
     player = NimAI()
 
     # Play n games
-    for i in range(n):
+    for i in range(1):
         print(f"Playing training game {i + 1}")
         game = Nim()
-
+        print(game.piles)
+        
         # Keep track of last move made by either player
         last = {
             0: {"state": None, "action": None},
@@ -174,6 +175,7 @@ def train(n):
             # Keep track of current state and action
             state = game.piles.copy()
             action = player.choose_action(game.piles)
+            print (action)
 
             # Keep track of last state and action
             last[game.player]["state"] = state
@@ -182,6 +184,9 @@ def train(n):
             # Make move
             game.move(action)
             new_state = game.piles.copy()
+            print (new_state)
+
+            print(player.q)
 
             # When game is over, update Q values with rewards
             if game.winner is not None:
@@ -202,6 +207,8 @@ def train(n):
                     new_state,
                     0
                 )
+            print(player.q)
+            
 
     print("Done training")
 
