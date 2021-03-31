@@ -93,7 +93,6 @@ class NimAI():
         from taking that action.
         """
         old = self.get_q_value(old_state, action)
-        print(old)
         best_future = self.best_future_reward(new_state)
         self.update_q_value(old_state, action, old, reward, best_future)
 
@@ -106,7 +105,6 @@ class NimAI():
         if (state, action) not in self.q:
             return 0
         return self.q[state, action]
-
 
     def update_q_value(self, state, action, old_q, reward, future_rewards):
         """
@@ -123,8 +121,9 @@ class NimAI():
         `alpha` is the learning rate, and `new value estimate`
         is the sum of the current reward and estimated future rewards.
         """
-        raise NotImplementedError
-
+        state = tuple(state)
+        self.q[state, action] = old_q + (self.alpha * ((reward + future_rewards)- old_q))
+        
     def best_future_reward(self, state):
         """
         Given a state `state`, consider all possible `(state, action)`
@@ -135,8 +134,12 @@ class NimAI():
         Q-value in `self.q`. If there are no available actions in
         `state`, return 0.
         """
-        raise NotImplementedError
-
+        actions = [action for action in Nim.available_actions(state)]
+        if not actions:
+            return 0
+        values = [self.get_q_value(state, action) for action in actions]
+        return max(values)
+        
     def choose_action(self, state, epsilon=True):
         """
         Given a state `state`, return an action `(i, j)` to take.
@@ -152,12 +155,22 @@ class NimAI():
         If multiple actions have the same Q-value, any of those
         options is an acceptable return value.
         """
-        
-        actions = [x for x in Nim.available_actions(state)]
-        if epsilon == False:
-            return actions[0]
-        elif epsilon == True:
-            return actions[random.randrange(len(actions))]            
+        actions = [action for action in Nim.available_actions(state)]
+
+        if epsilon == True:
+            if random.random() <= self.epsilon:
+                return actions[random.randrange(len(actions))]            
+        i = 0
+        for action in actions:
+            if i == 0:
+                max = action
+            else:
+                if self.get_q_value(state, action) > self.get_q_value(state, max):
+                    max = action
+            i += 1
+                      
+        return max
+
 
 def train(n):
     """
@@ -167,10 +180,9 @@ def train(n):
     player = NimAI()
 
     # Play n games
-    for i in range(1):
+    for i in range(n):
         print(f"Playing training game {i + 1}")
         game = Nim()
-        print(game.piles)
         
         # Keep track of last move made by either player
         last = {
@@ -184,7 +196,6 @@ def train(n):
             # Keep track of current state and action
             state = game.piles.copy()
             action = player.choose_action(game.piles)
-            print (action)
 
             # Keep track of last state and action
             last[game.player]["state"] = state
@@ -193,14 +204,9 @@ def train(n):
             # Make move
             game.move(action)
             new_state = game.piles.copy()
-            print (new_state)
-
-            print(player.q)
 
             # When game is over, update Q values with rewards
             if game.winner is not None:
-                print("win")
-                
                 player.update(state, action, new_state, -1)
                 player.update(
                     last[game.player]["state"],
@@ -212,16 +218,12 @@ def train(n):
 
             # If game is continuing, no rewards yet
             elif last[game.player]["state"] is not None:
-                print("tie")
-                
                 player.update(
                     last[game.player]["state"],
                     last[game.player]["action"],
                     new_state,
                     0
                 )
-            print(player.q)
-            
 
     print("Done training")
 
