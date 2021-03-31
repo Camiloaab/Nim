@@ -122,7 +122,7 @@ class NimAI():
         is the sum of the current reward and estimated future rewards.
         """
         state = tuple(state)
-        self.q[state, action] = old_q + (self.alpha * ((reward + future_rewards)- old_q))
+        self.q[state, action] = old_q + (self.alpha * ((reward + future_rewards) - old_q))
         
     def best_future_reward(self, state):
         """
@@ -176,7 +176,6 @@ def train(n):
     """
     Train an AI by playing `n` games against itself.
     """
-
     player = NimAI()
 
     # Play n games
@@ -237,7 +236,6 @@ def play(ai, human_player=None):
     `human_player` can be set to 0 or 1 to specify whether
     human player moves first or second.
     """
-
     # If no player order set, choose human's order randomly
     if human_player is None:
         human_player = random.randint(0, 1)
