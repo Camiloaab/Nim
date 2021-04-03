@@ -64,67 +64,24 @@ The `choose_action` function selects an action to take in a given state (either 
 
 The `Nim` and `NimAI` classes are ultimately used in the `train` and `play` functions. The `train` function trains an AI by running `n` simulated games against itself, returning the fully trained AI. The `play` function accepts a trained AI as input, and lets a human player play a game of Nim against the AI.
 
-**Specification**
-
-The `load_data` function accepts the CSV filename as its argument, open that file, and return a tuple `(evidence, labels)`. `evidence` is a list of all of the evidence for each of the data points, and `labels` is a list of all of the labels for each data point.
-
-Since there's one piece of evidence and one label for each row of the spreadsheet, the length of the `evidence` list and the length of the `labels` list is equal to the number of rows in the CSV spreadsheet (excluding the header row). The lists are ordered according to the order the users appear in the spreadsheet. That is to say, `evidence[0]` is the evidence for the first user, and `labels[0]` is the label for the first user.
-
-Each element in the `evidence` list is itself a list. The list is of length 17: the number of columns in the spreadsheet excluding the final column (the label column).
-
-The values in each evidence list are in the same order as the columns that appear in the evidence spreadsheet.
-
-Note that, to build a nearest-neighbor classifier, all of our data needs to be numeric. So, the values are being converted to the following types:
-
-- `Administrative`, `Informational`, `ProductRelated`, `Month`, `OperatingSystems`, `Browser`, `Region`, `TrafficType`, `VisitorType`, and `Weekend` are all of type `int`.
-
-- `Administrative_Duration`, `Informational_Duration`, `ProductRelated_Duration`, `BounceRates`, `ExitRates`, `PageValues`, and `SpecialDay` are all of type `float`.
-
-- `Month` is `0` for January, `1` for February, `2` for March, etc. up to `11` for December.
-
-- `VisitorType` is `1` for returning visitors and `0` for non-returning visitors.
-
-- `Weekend` is `1` if the user visited on a weekend and `0` otherwise.
-
-- Each value of `labels` is either the integer `1`, if the user did go through with a purchase, or `0` otherwise.
-
-For example, the value of the first evidence list is `[0, 0.0, 0, 0.0, 1, 0.0, 0.2, 0.2, 0.0, 0.0, 1, 1, 1, 1, 1, 1, 0]` and the value of the first label is `0`.
-
-The `train_model function` accepts a list of evidence and a list of labels, and returns a scikit-learn nearest-neighbor classifier (a k-nearest-neighbor classifier where k = 1) fitted on that training data. By importing `KNeighborsClassifier` from `sklearn.neighbors` we can use a k-nearest-neighbors classifier in this function.
-
-The `evaluate` function accepts a list of labels (the true labels for the users in the testing set) and a list of predictions (the labels predicted by our classifier), and returns two floating-point values `(sensitivity, specificity)`.
-
-- `sensitivity` is a floating-point value from `0` to `1` representing the “true positive rate”: the proportion of actual positive labels that were accurately identified.
-
-- `specificity` is a floating-point value from `0` to `1` representing the “true negative rate”: the proportion of actual negative labels that were accurately identified.
-
-We assume that the list of true labels will contain at least one positive label and at least one negative label.
-
 ## Resources
 
 * [Learning - Lecture 4 - CS50's Introduction to Artificial Intelligence with Python 2020][cs50 lecture]
 
 ## Usage
 
-**To install Scikit-learn:**
+**To train an AI and play Nim against it:** 
 
-* Inside the `shopping` directory: `pip3 install scikit-learn`
-
-**To train and test a model to predict online shopping purchases:** 
-
-* Inside the `shopping` directory: `python shopping.py shopping.csv`
+* Inside the `nim` directory: `python play.py`
 
 ## Acknowledgements
 
 Project and images from the course [CS50's Introduction to Artificial Intelligence with Python 2020][cs50 ai] from HarvardX.
 
-Data set provided by [Sakar, C.O., Polat, S.O., Katircioglu, M. et al. Neural Comput & Applic (2018)][dataset].
-
 ## Credits
 
 [*Luis Sanchez*][linkedin] 2021.
 
-[cs50 lecture]: https://www.youtube.com/watch?v=E4M_IQG0d9g
+[cs50 lecture]: https://youtu.be/E4M_IQG0d9g?t=4198
 [linkedin]: https://www.linkedin.com/in/luis-sanchez-13bb3b189/
 [cs50 ai]: https://cs50.harvard.edu/ai/2020/
-[dataset]: https://link.springer.com/article/10.1007/s00521-018-3523-0
