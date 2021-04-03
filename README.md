@@ -42,14 +42,27 @@ Exploration, on the other hand, means that the algorithm may use a previously un
 
 To implement the concept of exploration and exploitation, we can use the epsilon `ε` greedy algorithm. In this type of algorithm, we set `ε` equal to how often we want to move randomly. With probability `1-ε`, the algorithm chooses the best move (exploitation). With probability `ε`, the algorithm chooses a random move (exploration).
 
-----------------------------------------------------------
 ## Implementation
 
-`shopping.csv` contains the data set for this project. There are about 12,000 user sessions represented in this spreadsheet. The first six columns measure the different types of pages users have visited in the session: the `Administrative`, `Informational`, and `ProductRelated` columns measure how many of those types of pages the user visited, and their corresponding `_Duration` columns measure how much time the user spent on any of those pages. The `BounceRates`, `ExitRates`, and `PageValues` columns measure information from Google Analytics about the page the user visited. `SpecialDay` is a value that measures how closer the date of the user’s session is to a special day (like Valentine’s Day or Mother’s Day). `Month` is an abbreviation of the month the user visited. `OperatingSystems`, `Browser`, `Region`, and `TrafficType` are all integers describing information about the user themself. `VisitorType` will take on the value `Returning_Visitor` for returning visitors and some other string value for non-returning visitors. `Weekend` is `TRUE` or `FALSE` depending on whether or not the user is visiting on a weekend.
+In `nim.py`, there are two classes defined: `Nim` and `NimAI`, along with two functions: `train` and `play`.
 
-Perhaps the most important column, though, is the last one: the `Revenue` column. This is the column that indicates whether the user ultimately made a purchase or not: `TRUE` if they did, `FALSE` if they didn’t. This is the column that we’d predict (the “label”), based on the values for all of the other columns (the “evidence”).
+The `Nim` class defines how a Nim game is played. In the `__init__` function, every Nim game keeps track of a list of piles, a current player (`0` or `1`), and the winner of the game (if one exists). The `available_actions` function returns a set of all the available actions in a state. For example, `Nim.available_actions([2, 1, 0, 0])` returns the set `{(0, 1), (1, 1), (0, 2)}`, since the three possible actions are to take either 1 or 2 objects from pile `0`, or to take 1 object from pile `1`.
 
-At `shopping.py`, the main function loads data from the CSV spreadsheet by calling the `load_data` function and splits the data into a training and testing set. The `train_model` function is then called to train a machine learning model on the training data. Then, the model is used to make predictions on the testing data set. Finally, the `evaluate` function determines the sensitivity and specificity of the model, before the results are ultimately printed to the terminal.
+The remaining functions are used to define the gameplay: the `other_player` function determines who the opponent of a given player is, `switch_player` changes the current player to the opposing player, and `move` performs an action on the current state and switches the current player to the opposing player.
+
+The `NimAI` class defines our AI that will learn to play Nim. In the `__init__` function, we start with an empty `self.q` dictionary, this will keep track of all of the current Q-values learned by our AI by mapping `(state, action)` pairs to a numerical value. As an implementation detail, though we usually represent state as a list, since lists can’t be used as Python dictionary keys, we instead use a tuple version of the state when getting or setting values in `self.q`.
+
+For example, if we wanted to set the Q-value of the state `[0, 0, 0, 2]` and the action `(3, 2)` to `-1`, we would write something like:
+
+`self.q[(0, 0, 0, 2), (3, 2)] = -1`
+
+Every `NimAI` object has an `alpha` and `epsilon` value that will be used for Q-learning and for action selection, respectively.
+
+The `update` function takes as input state `old_state`, an action taken in that state `action`, the resulting state after performing that action `new_state`, and an immediate reward for taking that action `reward`. The function then performs Q-learning by first getting the current Q-value for the `state` and `action` (by calling `get_q_value`), determining the best possible future rewards (by calling `best_future_reward`), and then using both of those values to update the Q-value (by calling `update_q_value`).
+
+The `choose_action` function selects an action to take in a given state (either greedily, or using the epsilon-greedy algorithm).
+
+The `Nim` and `NimAI` classes are ultimately used in the `train` and `play` functions. The `train` function trains an AI by running `n` simulated games against itself, returning the fully trained AI. The `play` function accepts a trained AI as input, and lets a human player play a game of Nim against the AI.
 
 **Specification**
 
