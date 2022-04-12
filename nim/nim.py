@@ -5,7 +5,7 @@ import time
 
 class Nim():
 
-    def __init__(self, initial=[1, 3, 5, 7]):
+    def __init__(self,game_type,initial=[1,3,4,5]):
         """
         Initialize game board.
         Each game board has
@@ -16,6 +16,7 @@ class Nim():
         self.piles = initial.copy()
         self.player = 0
         self.winner = None
+        self.type=game_type
 
     @classmethod
     def available_actions(cls, piles):
@@ -67,12 +68,14 @@ class Nim():
 
         # Check for a winner
         if all(pile == 0 for pile in self.piles):
-            self.winner = self.player
+            if self.type==1:
+                self.winner = self.player
+            else: self.winner=self.other_player(self.player)
 
 
 class NimAI():
 
-    def __init__(self, alpha=0.5, epsilon=0.1):
+    def __init__(self, game_type,alpha=0.5, epsilon=0.1):
         """
         Initialize AI with an empty Q-learning dictionary,
         an alpha (learning) rate, and an epsilon rate.
@@ -85,6 +88,7 @@ class NimAI():
         self.q = dict()
         self.alpha = alpha
         self.epsilon = epsilon
+        self.type=game_type
 
     def update(self, old_state, action, new_state, reward):
         """
@@ -172,16 +176,16 @@ class NimAI():
         return max
 
 
-def train(n):
+def train(n,game_type):
     """
     Train an AI by playing `n` games against itself.
     """
-    player = NimAI()
+    player = NimAI(game_type)
 
     # Play n games
     for i in range(n):
-        print(f"Playing training game {i + 1}")
-        game = Nim()
+        #print(f"Playing training game {i + 1}")
+        game = Nim(game_type)
         
         # Keep track of last move made by either player
         last = {
@@ -206,12 +210,12 @@ def train(n):
 
             # When game is over, update Q values with rewards
             if game.winner is not None:
-                player.update(state, action, new_state, -1)
+                player.update(state, action, new_state, -game_type)
                 player.update(
                     last[game.player]["state"],
                     last[game.player]["action"],
                     new_state,
-                    1
+                    game_type
                 )
                 break
 
@@ -224,13 +228,13 @@ def train(n):
                     0
                 )
 
-    print("Done training")
+    print("Done playing "+ str(n)+" training games")
 
     # Return the trained AI
     return player
 
 
-def play(ai, human_player=None):
+def play(ai, game_type,human_player=1):
     """
     Play human game against the AI.
     `human_player` can be set to 0 or 1 to specify whether
@@ -241,7 +245,7 @@ def play(ai, human_player=None):
         human_player = random.randint(0, 1)
 
     # Create new game
-    game = Nim()
+    game = Nim(game_type)
 
     # Game loop
     while True:
