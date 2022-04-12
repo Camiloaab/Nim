@@ -11,6 +11,6 @@ from nim import train, play
     Type of play: The human player can choose whether the game is normal play
     (last to move wins) of misere (last to move loses).
     """
-game_type=2*int(input("Type 0 in case you want normal play or 1 if you want misere "))-1
+game_type=2*int(input("Type 0 for normal play or 1 for Misere "))-1
 ai = train(10000,game_type)
 play(ai,game_type)
