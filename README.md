@@ -81,6 +81,8 @@ Project and images from the course [CS50's Introduction to Artificial Intelligen
 
 [*Luis Sanchez*][linkedin] 2021.
 
+The only difference with the original version is that we added the possibility of choosing between normal play and Misere.
+
 [cs50 lecture]: https://youtu.be/E4M_IQG0d9g?t=4198
 [linkedin]: https://www.linkedin.com/in/luis-sanchez-13bb3b189/
 [cs50 ai]: https://cs50.harvard.edu/ai/2020/
